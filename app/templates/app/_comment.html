@@ -1,0 +1,61 @@
+<div class="comment-card">
+    <div class="comment-header">
+        <div class="comment-avatar">{{ comment.name|first }}</div>
+        <div class="comment-meta">
+            <p class="comment-name">{{ comment.name }}</p>
+            <span class="comment-email">{{ comment.email }}</span>
+        </div>
+        {% if comment.parent is None %}
+            <span class="comment-rating">
+                <i class="bi bi-star-fill"></i>{{ comment.rating }}
+            </span>
+        {% endif %}
+    </div>
+    <p class="comment-message">{{ comment.message }}</p>
+    {% if comment.file %}
+        <div class="mt-2 mb-2">
+            <img src="{{ comment.file.url }}" alt="comment attachment"
+                 style="max-width:100%; max-height:250px; border-radius:8px; object-fit:cover;">
+        </div>
+    {% endif %}
+    <div class="d-flex align-items-center gap-3">
+        <span class="comment-date">
+            <i class="bi bi-clock"></i>{{ comment.created_at }}
+        </span>
+        {% if level < 2 %}
+            <button class="comment-reply-btn" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#reply-form-{{ comment.id }}">
+                <i class="bi bi-reply-fill"></i> Reply
+            </button>
+        {% endif %}
+    </div>
+
+    {% if level < 2 %}
+        <div class="collapse mt-3" id="reply-form-{{ comment.id }}">
+            <form method="post" action="{% url 'add_comment' product.id %}" class="reply-form">
+                {% csrf_token %}
+                <input type="hidden" name="parent" value="{{ comment.id }}">
+                <input type="hidden" name="rating" value="1">
+                <div class="row g-2 mb-2">
+                    <div class="col-md-6">
+                        <input type="text" name="name" class="form-control form-control-sm rounded-3" placeholder="Your name">
+                    </div>
+                    <div class="col-md-6">
+                        <input type="email" name="email" class="form-control form-control-sm rounded-3" placeholder="your@email.com">
+                    </div>
+                </div>
+                <textarea name="message" class="form-control form-control-sm rounded-3 mb-2"
+                          rows="2" placeholder="Write your reply..."></textarea>
+                <button type="submit" class="btn btn-dark btn-sm rounded-3">
+                    <i class="bi bi-send-fill"></i> Reply
+                </button>
+            </form>
+        </div>
+    {% endif %}
+</div>
+
+{% for reply in comment.replies.all %}
+    <div class="comment-replies">
+        {% include 'app/_comment.html' with comment=reply level=level|add:1 %}
+    </div>
+{% endfor %}
