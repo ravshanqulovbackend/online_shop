@@ -2,14 +2,33 @@ from django.shortcuts import render, get_object_or_404, redirect
 from app.models import Category, Product, Comment
 from app.forms import CommentModelForm, OrderModelForm
 from django.contrib import messages
+from django.db.models import Q  # Qidiruv uchun kerak
 
 
 def home(request, category_id=None):
     categories = Category.objects.all()
+    
+    # 1. Kategoriya bo'yicha boshlang'ich filtrlash
     if category_id:
         products = Product.objects.filter(category_id=category_id)
     else:
         products = Product.objects.all()
+        
+    # 2. QIDIRUV MANTIQI
+    search_query = request.GET.get('search')
+    if search_query:
+        # Mahsulot nomi (name) yoki tavsifida (description) qidiradi
+        products = products.filter(
+            Q(name__icontains=search_query) | 
+            Q(description__icontains=search_query)
+        )
+        
+    # 3. NARX BO'YICHA FILTER MANTIQI
+    sort_by = request.GET.get('sort')
+    if sort_by == 'expensive':
+        products = products.order_by('-price')  # Qimmatidan arzoniga
+    elif sort_by == 'cheap':
+        products = products.order_by('price')   # Arzonidan qimmatiga
         
     context = {
         'categories': categories,
@@ -46,38 +65,48 @@ def product_detail(request, pk):
     }
     return render(request, 'app/detail.html', context)
 
-def add_comment(request,pk):
-    product = get_object_or_404(Product,id = pk)
+
+def add_comment(request, pk):
+    product = get_object_or_404(Product, id=pk)
+    
     if request.method == 'POST':
+        print("POST ma'lumotlari:", request.POST)
         form = CommentModelForm(request.POST, request.FILES)
+        
         if form.is_valid():
             comment = form.save(commit=False)
             comment.product = product
+            
             parent_id = request.POST.get('parent')
             if parent_id:
-                parent = get_object_or_404(Comment,id = parent_id)
-                if parent.parent is None or parent.parent.parent is None:
-                    comment.parent = parent
+                parent_obj = Comment.objects.filter(id=parent_id).first()
+                if parent_obj:
+                    if parent_obj.parent is None or parent_obj.parent.parent is None:
+                        comment.parent = parent_obj
+            
             comment.save()
-    return redirect('detail',pk)
-    
+            print("URAA! Sharh muvaffaqiyatli saqlandi.")
+            return redirect('detail', pk=pk)
+        else:
+            print("FORM XATOLIKLARI:", form.errors.as_data())
+            
+    return redirect('detail', pk=pk)
 
-def order_view(request,pk):
-    product = get_object_or_404(Product,id = pk)
+
+def order_view(request, pk):
+    product = get_object_or_404(Product, id=pk)
     if request.method == 'POST':
         form = OrderModelForm(request.POST)
         if form.is_valid():
             order = form.save(commit=False)
             order.product = product
             if product.stock < order.quantity:
-                # add message warning info
                 messages.add_message(
                     request,
                     messages.WARNING,
                     "Buyurtmalar soni Skladdagi productlar sonidan ortiq"
                 )
                 print('-----------------')
-
             else:
                 product.stock -= order.quantity
                 product.save()
@@ -88,8 +117,7 @@ def order_view(request,pk):
                     f"{order.id} Buyurtma muvaffaqiyatli amalga oshirildi."
                 )
                 print('++++++++++++++')
-                # add message success info
         else:
             messages.error(request, "Telefon raqamini to'g'ri kiriting: +998XXXXXXXXX")
 
-    return redirect('detail',pk)
+    return redirect('detail', pk=pk)

@@ -1,60 +1,60 @@
-import uuid
 from django.db import models
 from decimal import Decimal
-
+import uuid
 from django.core.validators import RegexValidator
 from django.templatetags.static import static
 from app.utils import product_image_path
 
 
+uz_phone_validator = RegexValidator(
+    regex=r'^\+998\d{9}$',
+    message="Telefon raqami +998XXXXXXXXX ko'rinishida bo'lishi kerak (masalan +998901234567).",
+)
 
 
-# Create your models here.
+
 class Category(models.Model):
-    title = models.CharField(max_length=100)
+    title = models.CharField(max_length=255,unique=True)
+    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
+    
     def __str__(self):
         return self.title
     
     class Meta:
-        verbose_name_plural = "Categories"
+        verbose_name_plural = 'Categories'
+    
 
 
 class Product(models.Model):
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products')
-    name = models.CharField(max_length=255)
-    description = models.TextField(blank=True, null=True)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    
-    discount = models.PositiveIntegerField(default=0, blank=True, null=True)
-    
+    name = models.CharField()
+    description = models.TextField(null=True,blank=True)
+    price = models.DecimalField(max_digits=14,decimal_places=2) # 2000
     stock = models.PositiveIntegerField(default=0)
-    image = models.FileField(upload_to='products/', blank=True, null=True)
-    image_url = models.URLField(max_length=500, blank=True, null=True)
-
+    image = models.ImageField(upload_to=product_image_path,null=True,blank=True)
+    category = models.ForeignKey(Category,on_delete=models.CASCADE,related_name='products')
+    discount = models.PositiveIntegerField(default=0) # 30
+    
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)    
-
+    updated_at = models.DateTimeField(auto_now=True)
+    
     @property
     def discounted_price(self):
-        if self.discount and self.discount > 0:
-            return self.price * (Decimal('1') - Decimal(self.discount) / Decimal('100'))
+        if self.discount:
+            return self.price * (Decimal('1') - self.discount / Decimal('100'))
+
         return self.price
     
     @property
     def get_image_path(self):
         if self.image:
             return self.image.url
-        if self.image_url:
-            return self.image_url
-        return "https://dummyimage.com/450x300/dee2e6/6c757d.jpg"
-
+        
+        return static("app/images/not_found_image.jpg")
+        
     def __str__(self):
         return self.name
-
-
 
 
 class Comment(models.Model):
@@ -76,22 +76,31 @@ class Comment(models.Model):
                                 on_delete=models.CASCADE,
                                 related_name='comments',
                                 null=True,blank=True)
+    parent = models.ForeignKey('self',
+                               on_delete=models.CASCADE,
+                               related_name='replies',
+                               null=True,blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     
-
+    
     def __str__(self):
         return f'{self.email} - {self.message}'
-
+    
+    
 class Order(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=120)
-    phone = models.CharField(max_length=13, validators=[RegexValidator(r'^\+\d{12}$')])
+    name = models.CharField(max_length=150)
+    phone = models.CharField(max_length=13, validators=[uz_phone_validator])
     quantity = models.PositiveSmallIntegerField(default=1)
-    product = models.ForeignKey(Product, on_delete=models.SET_NULL, related_name='orders', null=True, blank=True)
+    product = models.ForeignKey(Product,
+                                on_delete=models.SET_NULL,
+                                related_name='orders',
+                                null=True,
+                                blank=True
+                                )
     created_at = models.DateTimeField(auto_now_add=True)
-
     def __str__(self):
         return f'{self.name} - {self.phone}'
-
+    
     class Meta:
         db_table = 'orders'
