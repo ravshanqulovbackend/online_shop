@@ -1,0 +1,283 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uz">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>Yangi mahsulot qo'shish - Apelsin</title>
+    
+    <!-- Hech qanday tashqi kutubxonalarga ulanmagan sof, universal premium dizayn -->
+    <style>
+        /* Umumiy sahifa sozlamalari */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background-color: #f9fafb;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            color: #1f2937;
+            display: flex;
+            flex-direction: column;
+            min-height: 100-screen;
+            min-height: -webkit-fill-available;
+        }
+        html, body {
+            height: 100%;
+        }
+
+        /* Navigatsiya paneli */
+        .navbar {
+            background-color: #0f172a;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+            margin-bottom: 3rem;
+        }
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: #f59e0b;
+            text-decoration: none;
+            letter-spacing: -0.025em;
+        }
+        .nav-link {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #ffffff;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .nav-link:hover {
+            color: #f59e0b;
+        }
+
+        /* Asosiy konteyner */
+        .container {
+            flex: 1 0 auto;
+            max-w-7xl;
+            width: 100%;
+            margin: 0 auto;
+            padding: 0 1rem 3rem 1rem;
+        }
+        .form-wrapper {
+            max-width: 550px;
+            margin: 0 auto;
+        }
+
+        /* Forma Kartasi (Card) */
+        .card {
+            background-color: #ffffff;
+            border-radius: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            border: 1px solid #f3f4f6;
+            overflow: hidden;
+        }
+        .card-header {
+            background-color: #0f172a;
+            padding: 1.25rem;
+            text-align: center;
+            border-bottom: 1px solid #1e293b;
+        }
+        .card-title {
+            color: #ffffff;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        /* Forma maydonlari */
+        .card-body {
+            padding: 2rem;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.375rem;
+            margin-bottom: 1.25rem;
+        }
+        .form-group label {
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: #374151;
+            letter-wide: 0.025em;
+        }
+
+        /* Django yaratadigan inputlarning hammasini chiroyli qilish */
+        form input, form select, form textarea {
+            width: 100% !important;
+            padding: 0.75rem 1rem !important;
+            border-radius: 0.75rem !important;
+            border: 1px solid #d1d5db !important;
+            background-color: #ffffff !important;
+            color: #1f2937 !important;
+            font-size: 0.95rem !important;
+            line-height: 1.5 !important;
+            transition: all 0.2s ease-in-out !important;
+            display: block !important;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+        }
+        form input:focus, form select:focus, form textarea:focus {
+            outline: none !important;
+            border-color: #4f46e5 !important;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15) !important;
+        }
+
+        /* Textarea va File inputlarni moslash */
+        form textarea {
+            min-height: 110px !important;
+            resize: vertical !important;
+        }
+        form input[type="file"] {
+            padding: 0.5rem !important;
+            background-color: #f9fafb !important;
+            border: 2px dashed #cbd5e1 !important;
+            cursor: pointer !important;
+            box-shadow: none !important;
+        }
+        form input[type="file"]:hover {
+            border-color: #4f46e5 !important;
+            background-color: #f5f3ff !important;
+        }
+        form input[type="checkbox"] {
+            width: auto !important;
+            display: inline-block !important;
+            padding: 0 !important;
+        }
+
+        /* Xatolik xabarlari */
+        .error-panel {
+            font-size: 0.75rem;
+            color: #dc2626;
+            font-weight: 600;
+            margin-top: 0.25rem;
+            background-color: #fef2f2;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            border: 1px solid #fee2e2;
+        }
+
+        /* Tugmalar (Buttons) */
+        .btn-stack {
+            margin-top: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .btn-submit {
+            width: 100%;
+            background-color: #4f46e5;
+            color: #ffffff;
+            font-weight: 700;
+            padding: 0.875rem;
+            border-radius: 0.75rem;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.1);
+            transition: all 0.2s;
+        }
+        .btn-submit:hover {
+            background-color: #4338ca;
+            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.2);
+        }
+        .btn-cancel {
+            width: 100%;
+            display: block;
+            text-align: center;
+            border: 1px solid #e5e7eb;
+            color: #4b5563;
+            font-weight: 600;
+            padding: 0.875rem;
+            border-radius: 0.75rem;
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: background-color 0.2s;
+        }
+        .btn-cancel:hover {
+            background-color: #f9fafb;
+            border-color: #d1d5db;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: #0f172a;
+            padding: 1.5rem;
+            text-align: center;
+            border-t: 1px solid #1e293b;
+            flex-shrink: 0;
+            margin-top: auto;
+        }
+        .footer p {
+            font-size: 0.75rem;
+            color: #9ca3af;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navigatsiya -->
+    <nav class="navbar">
+        <a class="navbar-brand" href="{% url 'home' %}">Apelsin</a>
+        <a class="nav-link" href="{% url 'home' %}">Bosh sahifa</a>
+    </nav>
+
+    <!-- Asosiy Kontent -->
+    <div class="container">
+        <div class="form-wrapper">
+            <!-- Forma Kartasi -->
+            <div class="card">
+                
+                <!-- Karta Sarlavhasi -->
+                <div class="card-header">
+                    <h4 class="card-title">Yangi mahsulot qo'shish</h4>
+                </div>
+                
+                <!-- Karta Tanasi -->
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data" novalidate>
+                        {% csrf_token %}
+                        
+                        <!-- Django Form Maydonlari sikli -->
+                        {% for field in form %}
+                            <div class="form-group">
+                                <label>{{ field.label }}</label>
+                                {{ field }}
+                                
+                                <!-- Xatoliklar paneli -->
+                                {% if field.errors %}
+                                    <div class="error-panel">
+                                        {{ field.errors|striptags }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                        
+                        <!-- Amallar tugmalari -->
+                        <div class="btn-stack">
+                            <button type="submit" class="btn-submit">
+                                Saqlash
+                            </button>
+                            <a href="{% url 'home' %}" class="btn-cancel">
+                                Bekor qilish
+                            </a>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>Copyright &copy; Apelsin Shop 2026</p>
+    </footer>
+
+</body>
+</html>

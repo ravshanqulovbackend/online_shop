@@ -1,16 +1,16 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from app.models import Category, Product, Comment
-from app.forms import CommentModelForm, OrderModelForm
+from app.forms import CommentModelForm, OrderModelForm, ProductModelForm
 from django.contrib import messages
-from django.db.models import Q, Avg
+from django.db.models import F, Q, Avg
 
 def home(request, category_id=None):
     categories = Category.objects.all()
     
+    products = Product.objects.annotate(avg_rating=Avg('comments__rating'))
+    
     if category_id:
-        products = Product.objects.filter(category_id=category_id)
-    else:
-        products = Product.objects.all()
+        products = products.filter(category_id=category_id)
         
     search_query = request.GET.get('search')
     if search_query:
@@ -25,8 +25,9 @@ def home(request, category_id=None):
     elif sort_by == 'cheap':
         products = products.order_by('price')
     elif sort_by == 'rating':
-        products = products.annotate(avg_rating=Avg('comments__rating')).order_by('-avg_rating')
-        
+        products = products.order_by(F('avg_rating').desc(nulls_last=True))
+    elif sort_by == 'new':
+        products = products.order_by('-created_at')
     context = {
         'categories': categories,
         'products': products,
@@ -118,3 +119,24 @@ def order_view(request, pk):
             messages.error(request, "Telefon raqamini to'g'ri kiriting: +998XXXXXXXXX")
 
     return redirect('detail', pk=pk)
+
+
+def create_product(request):
+    if request.method == 'POST':
+        form = ProductModelForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+    else:
+        form = ProductModelForm()
+        
+    return render(request, 'app/add-product.html', {'form': form})
+
+def delete_product(request, pk):
+    product = get_object_or_404(Product, id=pk)
+    if request.method == 'POST':
+        product.delete()
+        messages.success(request, "Product muvaffaqiyatli o'chirildi.")
+        return redirect('home')
+    
+    return render(request, 'app/product-delete.html', {'product': product})

@@ -73,8 +73,12 @@
                 <a class="btn btn-outline-dark mt-auto" href="?sort=cheap{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}"> Cheap </a>
             </div>
             <div class="col-auto">
-                <a class="btn btn-outline-dark mt-auto" href="#"> Rating </a>
+                <a class="btn btn-outline-dark mt-auto {% if request.GET.sort == 'rating' %}active{% endif %}" href="?sort=rating{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}"> Rating </a>
             </div>
+            <div class="col-auto">
+                <a href="{% url 'create_product' %}" class="btn btn-outline-success">New</a>
+            </div>
+
         </div>
     </div>
 

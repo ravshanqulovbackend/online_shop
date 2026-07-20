@@ -1,0 +1,247 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uz">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <title>Mahsulotni o'chirish - Apelsin</title>
+        
+        <!-- Bootstrap Icons (Ikonkalar uchun) -->
+        <link href="https://jsdelivr.net" rel="stylesheet" />
+        
+        <!-- Sof, universal premium dizayn (Internet yoki lokal fayllar yuklanmasa ham aniq ishlaydi) -->
+        <style>
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                background: #f8f9fa;
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+                display: flex;
+                flex-direction: column;
+                min-height: 100vh;
+            }
+            
+            /* Navigatsiya */
+            .navbar {
+                background-color: #0f172a;
+                padding: 1rem 2rem;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            }
+            .navbar-brand {
+                font-size: 1.5rem;
+                font-weight: 900;
+                color: #f59e0b;
+                text-decoration: none;
+                letter-spacing: -0.025em;
+            }
+
+            /* Asosiy qism va karta */
+            .delete-wrapper {
+                flex: 1 0 auto;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 3rem 1rem;
+            }
+            .delete-card {
+                width: 100%;
+                max-width: 480px;
+                background: #fff;
+                border-radius: 24px;
+                overflow: hidden;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06);
+                border: 1px solid #f0f0f0;
+                padding: 1.5rem;
+            }
+            .delete-icon-circle {
+                width: 76px;
+                height: 76px;
+                border-radius: 50%;
+                background: #fdecea;
+                color: #dc3545;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 2.1rem;
+                margin: 1.5rem auto 1rem;
+            }
+            .text-center {
+                text-align: center;
+                padding: 0 1rem;
+            }
+            .text-center h4 {
+                font-size: 1.25rem;
+                font-weight: 700;
+                color: #111827;
+                margin-bottom: 0.5rem;
+            }
+            .text-center p {
+                font-size: 0.9rem;
+                color: #6b7280;
+                line-height: 1.4;
+            }
+
+            /* Mahsulot preview qismi */
+            .delete-product-preview {
+                display: flex;
+                align-items: center;
+                gap: 0.9rem;
+                background: #f8f9fa;
+                border: 1px solid #eef0f2;
+                border-radius: 16px;
+                padding: 0.85rem 1rem;
+                margin: 1.5rem 1rem 0.5rem;
+            }
+            .delete-product-preview img {
+                width: 56px;
+                height: 56px;
+                object-fit: cover;
+                border-radius: 10px;
+                flex-shrink: 0;
+                background: #fff;
+                border: 1px solid #e5e7eb;
+            }
+            .preview-info {
+                display: flex;
+                flex-direction: column;
+                gap: 0.2rem;
+            }
+            .delete-product-preview .name {
+                font-weight: 700;
+                color: #1f2937;
+                margin: 0;
+                font-size: 0.95rem;
+            }
+            .delete-product-preview .price {
+                color: #4b5563;
+                font-size: 0.85rem;
+                font-weight: 600;
+            }
+            .old-price {
+                text-decoration: line-through;
+                color: #9ca3af;
+                margin-right: 0.4rem;
+                font-weight: 400;
+            }
+
+            /* Tugmalar */
+            .delete-actions {
+                display: flex;
+                gap: 0.75rem;
+                padding: 1.5rem 1rem 1rem;
+            }
+            .btn {
+                flex: 1;
+                border-radius: 12px;
+                padding: 0.75rem 1rem;
+                font-weight: 700;
+                font-size: 0.95rem;
+                cursor: pointer;
+                text-align: center;
+                text-decoration: none;
+                transition: all 0.2s;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0.5rem;
+            }
+            .btn-cancel {
+                background: #ffffff;
+                border: 1px solid #d1d5db;
+                color: #4b5563;
+            }
+            .btn-cancel:hover {
+                background: #f9fafb;
+                border-color: #cbd5e1;
+            }
+            .btn-confirm-delete {
+                background: #dc3545;
+                border: 1px solid #dc3545;
+                color: #fff;
+            }
+            .btn-confirm-delete:hover {
+                background: #bb2d3b;
+                border-color: #bb2d3b;
+            }
+
+            /* Footer */
+            .footer {
+                background-color: #0f172a;
+                padding: 1.5rem;
+                text-align: center;
+                border-top: 1px solid #1e293b;
+                margin-top: auto;
+            }
+            .footer p {
+                font-size: 0.75rem;
+                color: #9ca3af;
+            }
+        </style>
+    </head>
+    <body>
+        
+        <!-- Navigatsiya -->
+        <nav class="navbar">
+            <a class="navbar-brand" href="{% url 'home' %}">Apelsin</a>
+        </nav>
+
+        <!-- Asosiy blok -->
+        <div class="delete-wrapper">
+            <div class="delete-card">
+                <div class="delete-icon-circle">
+                    <i class="bi bi-trash3-fill"></i>
+                </div>
+
+                <div class="text-center">
+                    <h4>Mahsulotni o'chirishni tasdiqlaysizmi?</h4>
+                    <p>Bu amalni ortga qaytarib bo'lmaydi. "<strong>{{ product.name }}{{ product.title }}</strong>" butunlay o'chib ketadi.</p>
+                </div>
+
+                <!-- Mahsulot haqida qisqacha ma'lumot -->
+                <div class="delete-product-preview">
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" alt="Mahsulot rasmi">
+                    {% elif product.get_image_path %}
+                        <img src="{{ product.get_image_path }}" alt="Mahsulot rasmi">
+                    {% else %}
+                        <div style="width:56px; height:56px; background:#e5e7eb; border-radius:10px; display:flex; align-items:center; justify-content:center; color:#9ca3af;"><i class="bi bi-image"></i></div>
+                    {% endif %}
+                    
+                    <div class="preview-info">
+                        <p class="name">{{ product.name }}{{ product.title }}</p>
+                        <span class="price">
+                            {% if product.discount or product.discounted_price %}
+                                <span class="old-price">{{ product.price }} so'm</span>
+                                <span>{{ product.discounted_price }} so'm</span>
+                            {% else %}
+                                {{ product.price }} so'm
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Tasdiqlash formasi -->
+                <form method="post" class="delete-actions">
+                    {% csrf_token %}
+                    <!-- Bekor qilish: agar xato bersa {% url 'home' %} ga o'zgaradi -->
+                    <a href="{% url 'home' %}" class="btn btn-cancel">Bekor qilish</a>
+                    <button type="submit" class="btn btn-confirm-delete">
+                        <i class="bi bi-trash3"></i> Ha, o'chirilsin
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Copyright &copy; Apelsin Shop 2026</p>
+        </footer>
+
+    </body>
+</html>
