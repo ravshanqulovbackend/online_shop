@@ -100,6 +100,11 @@
                                     <div class="bi-star-fill"></div>
                                     <div class="bi-star-fill"></div>
                                     <div class="bi-star-fill"></div>
+                                    {% if product.avg_rating %}
+                                        <span class="text-muted ms-1">({{ product.avg_rating|floatformat:1 }})</span>
+                                    {% else %}
+                                        <span class="text-muted ms-1">(0.0)</span>
+                                    {% endif %}
                                 </div>
                                 <!-- Product price-->
                                 {% if product.discount %}

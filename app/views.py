@@ -2,33 +2,30 @@ from django.shortcuts import render, get_object_or_404, redirect
 from app.models import Category, Product, Comment
 from app.forms import CommentModelForm, OrderModelForm
 from django.contrib import messages
-from django.db.models import Q  # Qidiruv uchun kerak
-
+from django.db.models import Q, Avg
 
 def home(request, category_id=None):
     categories = Category.objects.all()
     
-    # 1. Kategoriya bo'yicha boshlang'ich filtrlash
     if category_id:
         products = Product.objects.filter(category_id=category_id)
     else:
         products = Product.objects.all()
         
-    # 2. QIDIRUV MANTIQI
     search_query = request.GET.get('search')
     if search_query:
-        # Mahsulot nomi (name) yoki tavsifida (description) qidiradi
         products = products.filter(
             Q(name__icontains=search_query) | 
             Q(description__icontains=search_query)
         )
         
-    # 3. NARX BO'YICHA FILTER MANTIQI
     sort_by = request.GET.get('sort')
     if sort_by == 'expensive':
-        products = products.order_by('-price')  # Qimmatidan arzoniga
+        products = products.order_by('-price') 
     elif sort_by == 'cheap':
-        products = products.order_by('price')   # Arzonidan qimmatiga
+        products = products.order_by('price')
+    elif sort_by == 'rating':
+        products = products.annotate(avg_rating=Avg('comments__rating')).order_by('-avg_rating')
         
     context = {
         'categories': categories,
